@@ -31,7 +31,7 @@ export const selectLoginAccount = createSelector(
         zeroStyled: false,
         decimalsRounded: 4,
       }),
-      weth: formatEther(loginAccount.balances.weth, {
+      usdt: formatDai(loginAccount.balances.usdt, {
         zeroStyled: false,
         decimalsRounded: 2,
       }),
@@ -53,8 +53,8 @@ export const selectAccountFunds = createSelector(
       ? loginAccount.totalOpenOrdersFrozenFunds
       : ZERO;
 
-    if (loginAccount.balances.dai && loginAccount.balances.weth) {
-      totalAvailableTradingBalance = createBigNumber(loginAccount.balances.weth).minus(totalOpenOrderFunds);
+    if (loginAccount.balances.usdt) {
+      totalAvailableTradingBalance = createBigNumber(loginAccount.balances.usdt).minus(totalOpenOrderFunds);
     }
 
     if (loginAccount.totalFrozenFunds) {
@@ -81,7 +81,7 @@ export const selectAccountFunds = createSelector(
 );
 
 export const totalTradingBalance = (loginAccount: LoginAccount): BigNumber => {
-  return createBigNumber(loginAccount.balances.weth).minus(
+  return createBigNumber(loginAccount.balances.usdt).minus(
     loginAccount.totalOpenOrdersFrozenFunds
   );
 };

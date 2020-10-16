@@ -8,7 +8,7 @@ import { ZERO } from 'modules/common/constants';
 
 const DEFAULT_STATE: LoginAccount = {
   balances: {
-    weth: '0',
+    usdt: '0',
     eth: '0',
     rep: '0',
     dai: '0',
