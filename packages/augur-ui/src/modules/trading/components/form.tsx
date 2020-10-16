@@ -42,6 +42,7 @@ import { EXPIRATION_DATE_OPTIONS, convertUnixToFormattedDate, calcOrderExpiratio
 import { SimpleTimeSelector } from 'modules/create-market/components/common';
 import { calcPercentageFromPrice, calcPriceFromPercentage } from 'utils/format-number';
 import Media from 'react-media';
+import { augurSdk } from 'services/augursdk';
 
 enum ADVANCED_OPTIONS {
   EXPIRATION = '1',
@@ -404,8 +405,10 @@ class Form extends Component<FromProps, FormState> {
       );
     }
 
+    const Augur = augurSdk ? augurSdk.get() : undefined;
+
     if (
-      !convertDisplayAmountToOnChainAmount(value, market.tickSize)
+      !convertDisplayAmountToOnChainAmount(value, market.tickSize, Augur.precision)
         .mod(tradeInterval)
         .isEqualTo(0)
     ) {

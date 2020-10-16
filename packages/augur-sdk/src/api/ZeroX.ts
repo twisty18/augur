@@ -273,7 +273,8 @@ export class ZeroX {
     );
     const onChainAmount = convertDisplayAmountToOnChainAmount(
       params.displayAmount,
-      tickSize
+      tickSize,
+      this.client.precision,
     );
     const onChainPrice = convertDisplayPriceToOnChainPrice(
       params.displayPrice,
@@ -282,7 +283,8 @@ export class ZeroX {
     );
     const onChainShares = convertDisplayAmountToOnChainAmount(
       params.displayShares,
-      tickSize
+      tickSize,
+      this.client.precision,
     );
     return Object.assign(params, {
       amount: onChainAmount,
@@ -394,7 +396,9 @@ export class ZeroX {
       }
 
       const tradeInterval = getTradeInterval(minPrice, maxPrice, new BigNumber(market.numTicks));
-      const multipleOf = tradeInterval.dividedBy(market.tickSize).dividedBy(10 ** 18)
+      let multipleOf = tradeInterval.dividedBy(market.tickSize).dividedBy(QUINTILLION);
+      multipleOf = multipleOf.dividedBy(QUINTILLION.dividedBy(this.client.precision));
+
       if (!order.amount.mod(multipleOf).eq(0)) {
         throw new Error(`Order not multiple of ${multipleOf.toNumber()}`);
       }
@@ -624,11 +628,13 @@ export class ZeroX {
     );
     const displaySharesFilled = convertOnChainAmountToDisplayAmount(
       simulationData[0],
-      tickSize
+      tickSize,
+      this.client.precision,
     );
     const displaySharesDepleted = convertOnChainAmountToDisplayAmount(
       simulationData[2],
-      tickSize
+      tickSize,
+      this.client.precision,
     );
     const displayTokensDepleted = simulationData[1].dividedBy(this.client.precision);
     const displaySettlementFees = simulationData[3].dividedBy(this.client.precision);
