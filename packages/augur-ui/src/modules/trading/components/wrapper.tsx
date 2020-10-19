@@ -317,7 +317,7 @@ class Wrapper extends Component<WrapperProps, WrapperState> {
             this.setState(order);
             this.doesCrossSpread(order.trade.limitPrice, order.trade.side);
           }
-          const newOrderDaiEstimate = formatEther(
+          const newOrderDaiEstimate = formatDai(
             createBigNumber(newOrder.totalOrderValue.fullPrecision),
             {
               roundDown: false,
@@ -378,19 +378,19 @@ class Wrapper extends Component<WrapperProps, WrapperState> {
         maxPrice,
         market.marketType
       );
-      const formattedValue = formatEther(totalCost);
-      let potentialTradeLoss = formatEther(totalCost);
+      const formattedValue = formatDai(totalCost);
+      let potentialTradeLoss = formatDai(totalCost);
       const maxProfit = createBigNumber(order.orderQuantity).times(maxPrice);
-      let potentialTradeProfit = totalCost ? formatEther(maxProfit.minus(createBigNumber(totalCost))) : null;
+      let potentialTradeProfit = totalCost ? formatDai(maxProfit.minus(createBigNumber(totalCost))) : null;
       if (tradingTutorial) {
-        potentialTradeLoss = formatEther(40);
-        potentialTradeProfit = formatEther(60);
+        potentialTradeLoss = formatDai(40);
+        potentialTradeProfit = formatDai(60);
       }
       let trade = {
         ...useValues,
         limitPrice: order.orderPrice,
         selectedOutcome: selectedOutcome.id,
-        totalCost: formatEther(totalCost || 0),
+        totalCost: formatDai(totalCost || 0),
         numShares: order.orderQuantity,
         shareCost: formatNumber(0),
         potentialTradeLoss,
@@ -555,7 +555,7 @@ class Wrapper extends Component<WrapperProps, WrapperState> {
           }
         }}
         disabled={
-          !trade || !trade.limitPrice || (gsnUnavailable && isOpenOrder) || insufficientFunds || disableTrading || (!tradingApproved && initialLiquidity && tradingTutorial) || !allowPostOnlyOrder
+          !trade || !trade.limitPrice  || disableTrading || (!tradingApproved && initialLiquidity && tradingTutorial) || !allowPostOnlyOrder // insufficientFunds -- TODO broken due to simulate trade
         }
       />
     );

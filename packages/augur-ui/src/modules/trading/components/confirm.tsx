@@ -64,7 +64,7 @@ interface ConfirmProps {
   gasLimit: number;
   normalGasLimit: number;
   availableEth: BigNumber;
-  availableWeth: BigNumber;
+  availableUSDT: BigNumber;
   outcomeName: string;
   marketType: string;
   maxPrice: BigNumber;
@@ -113,7 +113,7 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
       trade,
       gasPrice,
       availableEth,
-      availableWeth,
+      availableUSDT,
       walletStatus,
       sweepStatus,
       postOnlyOrder,
@@ -139,8 +139,8 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
       !createBigNumber(prevProps.availableEth).eq(
         createBigNumber(availableEth)
       ) ||
-      !createBigNumber(prevProps.availableWeth).eq(
-        createBigNumber(availableWeth)
+      !createBigNumber(prevProps.availableUSDT).eq(
+        createBigNumber(availableUSDT)
       ) ||
       allowPostOnlyOrder !== prevProps.allowPostOnlyOrder
     ) {
@@ -158,7 +158,7 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
       gasLimit,
       normalGasLimit,
       availableEth,
-      availableWeth,
+      availableUSDT,
       tradingTutorial,
       GsnEnabled,
       initializeGsnWallet,
@@ -264,14 +264,13 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
       !tradingTutorial &&
       totalCost && totalCost.value > 0 &&
       createBigNumber(potentialTradeLoss.fullPrecision).gt(
-        createBigNumber(availableWeth)
+        createBigNumber(availableUSDT)
       )
     ) {
-      const hasEth = createBigNumber(availableEth).gt("0.001")
       messages = {
-        header: 'Insufficient WETH',
+        header: 'Insufficient USDT',
         type: ERROR,
-        message: `You do not have enough WETH${hasEth ? `, wrap some of ${formatEther(availableEth).formatted} ETH`: ''}`,
+        message: `You do not have enough USDT`,
       };
     }
 
@@ -306,7 +305,7 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
       initialLiquidity,
       postOnlyOrder,
       tradingTutorial,
-      availableWeth,
+      availableUSDT,
       showAddFundsModal,
       ethToDaiRate,
       account,
@@ -530,7 +529,7 @@ class Confirm extends Component<ConfirmProps, ConfirmState> {
               <button onClick={messages.callback ? () => messages.callback() : this.clearErrorMessage}>{XIcon}</button>
             )}
 
-            {!tradingTutorial && isLogged && totalCost && (createBigNumber(potentialTradeLoss.fullPrecision).gt(createBigNumber(availableWeth)) ||
+            {!tradingTutorial && isLogged && totalCost && (createBigNumber(potentialTradeLoss.fullPrecision).gt(createBigNumber(availableUSDT)) ||
             createBigNumber(gasCostInEth).gte(createBigNumber(availableEth))) &&
               <PrimaryButton action={() => showAddFundsModal({ tokenToAdd: WETH })} text={'Add Funds'} />
             }
