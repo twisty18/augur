@@ -69,6 +69,8 @@ export const updateAssets = (): ThunkAction<any, any, any, any> => async (
           rep: String(createBigNumber(signerREP).dividedBy(ETHER)),
           dai: daiBalance,
           weth,
+          usdt: String(createBigNumber(String(signerUSDT)).dividedBy(10**6)),
+          usdc: String(createBigNumber(String(signerUSDC)).dividedBy(10**6)),
           eth: String(createBigNumber(String(signerETH)).dividedBy(ETHER)),
           legacyAttoRep: String(signerLegacyREP),
           legacyRep: String(
