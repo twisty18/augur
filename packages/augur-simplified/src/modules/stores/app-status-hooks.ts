@@ -13,6 +13,7 @@ import {
   TransactionDetails,
   UserBalances,
 } from '../types';
+import { TX_STATUS } from '../constants';
 
 const {
   SET_SHOW_TRADING_FORM,
@@ -25,6 +26,7 @@ const {
   UPDATE_TRANSACTION,
   ADD_TRANSACTION,
   REMOVE_TRANSACTION,
+  CLEAR_TRANSACTION,
   FINALIZE_TRANSACTION,
   SET_MODAL,
   CLOSE_MODAL,
@@ -274,6 +276,12 @@ export function AppStatusReducer(state, action) {
       }
       break;
     }
+    case CLEAR_TRANSACTION: {
+      updatedState[TRANSACTIONS] = updatedState[TRANSACTIONS].filter(
+        (tx) => tx.status === TX_STATUS.PENDING
+      );
+      break;
+    }
     case FINALIZE_TRANSACTION: {
       updatedState[TRANSACTIONS].forEach((tx) => {
         if (tx.hash === action.hash) {
@@ -338,6 +346,8 @@ export const useAppStatus = (defaultState = MOCK_APP_STATUS_STATE) => {
         dispatch({ type: ADD_TRANSACTION, transaction }),
       removeTransaction: (hash: string) =>
         dispatch({ type: REMOVE_TRANSACTION, hash }),
+      clearTransaction: () =>
+        dispatch({ type: CLEAR_TRANSACTION }),
       updateGraphHeartbeat: (processed, blocknumber, errors) =>
         dispatch({
           type: UPDATE_GRAPH_HEARTBEAT,

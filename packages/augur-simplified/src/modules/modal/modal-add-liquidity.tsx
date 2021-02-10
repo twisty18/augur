@@ -92,9 +92,8 @@ interface ModalAddLiquidityProps {
 }
 
 export const updateTxStatus = (txResponse, updateTransaction) => {
+  const tx = AppStatusStore.get().transactions;
   if (txResponse.confirmations > 0) {
-    // TODO temp workaround
-    const tx = AppStatusStore.get().transactions;
     const updateTxState = tx.find(
       (tx) => tx.hash === txResponse.transactionHash
     );
@@ -412,12 +411,13 @@ const ModalAddLiquidity = ({
       setBreakdown(defaultAddLiquidityBreakdown);
     }
     if (modalType === REMOVE) {
-      doRemoveAmmLiquidity(
-        properties.marketId,
-        properties.cash,
-        properties.fee,
-        properties.amount
-      )
+      try {
+        doRemoveAmmLiquidity(
+          properties.marketId,
+          properties.cash,
+          properties.fee,
+          properties.amount
+        )
         .then((response) => {
           const { hash } = response;
           addTransaction({
@@ -435,22 +435,36 @@ const ModalAddLiquidity = ({
             .then((response) => updateTxStatus(response, updateTransaction));
         })
         .catch((e) => {
-          //TODO: handle errors here
+          throw e;
         });
+      }
+      catch (e) {
+        addTransaction({
+          hash: null,
+          chainId: loginAccount.chainId,
+          from: account,
+          seen: false,
+          status: TX_STATUS.FAILURE,
+          addedTime: new Date().getTime(),
+          message: `Remove Liquidity`,
+          marketDescription: market.description,
+        });
+      }
     } else {
-      await doAmmLiquidity(
-        properties.account,
-        modalType === CREATE ? undefined : properties.amm,
-        properties.marketId,
-        properties.cash,
-        properties.fee,
-        properties.amount,
-        modalType === ADD
-          ? amm !== null && amm?.id !== undefined && amm?.liquidity !== '0'
-          : false,
-        properties.priceNo,
-        properties.priceYes
-      )
+      try {
+        await doAmmLiquidity(
+          properties.account,
+          modalType === CREATE ? undefined : properties.amm,
+          properties.marketId,
+          properties.cash,
+          properties.fee,
+          properties.amount,
+          modalType === ADD
+            ? amm !== null && amm?.id !== undefined && amm?.liquidity !== '0'
+            : false,
+          properties.priceNo,
+          properties.priceYes
+        )
         .then((response) => {
           const { hash } = response;
           addTransaction({
@@ -466,10 +480,22 @@ const ModalAddLiquidity = ({
           response
             .wait()
             .then((response) => updateTxStatus(response, updateTransaction));
-        })
-        .catch((e) => {
-          // TODO: handle error
+          }).catch(e => {
+            throw e;
+          });
+      }
+      catch (e) {
+        addTransaction({
+          hash: null,
+          chainId: loginAccount.chainId,
+          from: account,
+          seen: false,
+          status: TX_STATUS.FAILURE,
+          addedTime: new Date().getTime(),
+          message: `Add Liquidity`,
+          marketDescription: market.description,
         });
+      }
     }
     closeModal();
     if (modalType === CREATE && history.location.pathname !== `/${MARKETS}`) {

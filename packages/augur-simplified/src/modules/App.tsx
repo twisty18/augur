@@ -129,6 +129,7 @@ const AppBody = () => {
   useEffect(() => {
     if (loginAccount?.account && blocknumber && transactions?.length > 0) {
       transactions
+        .filter((t) => t.hash)
         .filter((t) => !t.confirmedTime)
         .forEach((t: TransactionDetails) => {
           loginAccount.library.getTransactionReceipt(t.hash).then((receipt) => {

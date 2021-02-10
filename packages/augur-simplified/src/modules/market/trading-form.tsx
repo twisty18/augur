@@ -470,14 +470,7 @@ const TradingForm = ({
     return () => {
       isMounted = false;
     };
-  }, [
-    orderType,
-    selectedOutcomeId,
-    amount,
-    outcomeSharesRaw,
-    amm?.volumeTotal,
-    amm?.liquidity,
-  ]);
+  }, [orderType, selectedOutcomeId, amount, outcomeSharesRaw, amm?.volumeTotal, amm?.liquidity]);
 
   const userBalance = String(
     useMemo(() => {
@@ -537,38 +530,55 @@ const TradingForm = ({
     const outputYesShares = selectedOutcomeId === YES_OUTCOME_ID;
     const userBalances = marketShares?.outcomeSharesRaw || [];
     setShowTradingForm(false);
-    doTrade(
-      direction,
-      amm,
-      worstCaseOutput,
-      amount,
-      outputYesShares,
-      userBalances
-    )
-      .then((response) => {
-        if (response) {
-          const { hash } = response;
-          setAmount('');
-          addTransaction({
-            hash,
-            chainId: loginAccount.chainId,
-            seen: false,
-            status: TX_STATUS.PENDING,
-            from: loginAccount.account,
-            addedTime: new Date().getTime(),
-            message: `${
-              direction === TradingDirection.ENTRY ? 'Buy' : 'Sell'
-            } Shares`,
-            marketDescription: amm?.market?.description,
-          });
-          response
-            .wait()
-            .then((response) => updateTxStatus(response, updateTransaction));
-        }
-      })
-      .catch((e) => {
-        //TODO: handle errors here
+    try {
+      console.log('.....ok')
+      doTrade(
+        direction,
+        amm,
+        worstCaseOutput,
+        amount,
+        outputYesShares,
+        userBalances
+      )
+        .then((response) => {
+          if (response) {
+            const { hash } = response;
+            setAmount('');
+            addTransaction({
+              hash,
+              chainId: loginAccount.chainId,
+              seen: false,
+              status: TX_STATUS.PENDING,
+              from: loginAccount.account,
+              addedTime: new Date().getTime(),
+              message: `${
+                direction === TradingDirection.ENTRY ? 'Buy' : 'Sell'
+              } Shares`,
+              marketDescription: amm?.market?.description,
+            });
+            response
+              .wait()
+              .then((response) => updateTxStatus(response, updateTransaction));
+          }
+        })
+        .catch((e) => {
+          throw e;
+        });
+    }
+    catch (e) {
+      addTransaction({
+        hash: null,
+        chainId: loginAccount.chainId,
+        from: loginAccount.account,
+        seen: false,
+        status: TX_STATUS.FAILURE,
+        addedTime: new Date().getTime(),
+        message: `${
+          direction === TradingDirection.ENTRY ? 'Buy' : 'Sell'
+        } Shares`,
+        marketDescription: amm?.market?.description,
       });
+    }
   };
 
   return (

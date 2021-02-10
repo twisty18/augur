@@ -84,7 +84,7 @@ const Transaction = ({label, link, status, chainId}) => (
 );
 
 
-const Transactions = ({transactions, removeTransaction, chainId}) => {
+const Transactions = ({transactions, clearTransaction, chainId}) => {
   const [clear, setClear ] = useState(false);
   const [userTransactions, setUserTransactions ] = useState(transactions.sort((a,b) => b.timestamp - a.timestamp));
 
@@ -92,14 +92,15 @@ const Transactions = ({transactions, removeTransaction, chainId}) => {
     const handleClear = () => {
       // Remove all transaction that aren't PENDING
       const transactionsToRemove = transactions
-        .filter(tx => [TX_STATUS.CONFIRMED, TX_STATUS.FAILURE].includes(tx.status))
-        .map(tx => tx.hash);
+        .filter(tx => tx.status !== TX_STATUS.PENDING);
 
-      setUserTransactions(userTransactions.filter(tx => !transactionsToRemove.includes(tx.hash)).sort((a,b) => b.timestamp - a.timestamp))
+      const transactionToKeep = transactions
+        .filter(tx => tx.status === TX_STATUS.PENDING);
+
+      setUserTransactions(transactionToKeep.sort((a,b) => b.timestamp - a.timestamp))
+
       if (transactionsToRemove) {
-        transactionsToRemove.forEach(tx => {
-          removeTransaction(tx);
-        });
+        clearTransaction();
         setClear(false);
       }
     }
@@ -107,7 +108,7 @@ const Transactions = ({transactions, removeTransaction, chainId}) => {
     if (clear) {
       handleClear();
     }
-  }, [removeTransaction, transactions, clear, setClear, userTransactions]);
+  }, [clearTransaction, transactions, clear, setClear, userTransactions]);
 
   const canClear = userTransactions.filter(tx => [TX_STATUS.CONFIRMED, TX_STATUS.FAILURE].includes(tx.status)).length > 0;
 
@@ -148,11 +149,10 @@ const formatConnectorName = (connector) => {
 }
 
 interface AccountDetailsProps {
-  toggleWalletModal: Function;
   openOptions: Function;
   darkMode: boolean;
   transactions: object[];
-  removeTransaction: Function;
+  clearTransaction: Function;
   logout: Function;
 }
 
@@ -160,7 +160,7 @@ const AccountDetails = ({
   openOptions,
   darkMode,
   transactions,
-  removeTransaction,
+  clearTransaction,
   logout,
 }: AccountDetailsProps) => {
   const { chainId, account, connector } = useActiveWeb3React();
@@ -210,7 +210,7 @@ const AccountDetails = ({
         )}
       </section>
       <footer>
-        <Transactions chainId={chainId} removeTransaction={removeTransaction} transactions={transactions} />
+        <Transactions chainId={chainId} clearTransaction={clearTransaction} transactions={transactions} />
       </footer>
     </div>
   )
