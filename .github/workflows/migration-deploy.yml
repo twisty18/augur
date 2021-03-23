@@ -1,4 +1,4 @@
-name: Migrate UI Deploy
+name: Migration UI Deploy
 
 on:
   push:
