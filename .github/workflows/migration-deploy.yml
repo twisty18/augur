@@ -18,9 +18,9 @@ jobs:
       with:
         node-version: '15.x'
     - name: Install npm dependencies
-      run: yarn workspace @augurproject/migration install
+      run: yarn install
     - name: Run build task
-      run: yarn workspace @augurproject/migration build
+      run: yarn build
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
