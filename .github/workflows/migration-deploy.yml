@@ -7,10 +7,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     environment: migrate.augur.net
-
     steps:
     - uses: actions/checkout@v1
     - name: Install Node.js
