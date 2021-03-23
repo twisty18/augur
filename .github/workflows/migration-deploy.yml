@@ -3,7 +3,7 @@ name: Migrate UI Deploy
 on:
   push:
     branches:
-    - production/migrate
+    - production/migration
 
 jobs:
   build:
