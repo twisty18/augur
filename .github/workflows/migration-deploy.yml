@@ -19,6 +19,8 @@ jobs:
       run: yarn install
     - name: Run build task
       run: yarn build
+    - name: Build migration ui
+      run: yarn workspace @augurproject/migration build
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
